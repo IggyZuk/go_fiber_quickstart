@@ -1,12 +1,12 @@
 package main
 
 import (
-	"encoding/json"
 	"os"
 
-	"github.com/gofiber/fiber"
+	"github.com/gofiber/fiber/v2"
 )
 
+// FruitInterface is a collection of various fruits.
 type FruitInterface struct {
 	Page   int
 	Fruits []string
@@ -15,49 +15,52 @@ type FruitInterface struct {
 func main() {
 	app := fiber.New()
 
-	// Returns plain text.
-	app.Get("/", func(c *fiber.Ctx) {
-		c.Send("Hello, Fiber!")
+	// Load static files like CSS, Images & JavaScript.
+	app.Static("/static", "./static")
+
+	// Returns a local HTML file.
+	app.Get("/", func(c *fiber.Ctx) error {
+		return c.SendFile("./templates/hello.html")
 		// navigate to => http://localhost:3000/
 	})
 
-	// Load static files like CSS, Images & JavaScript
-	app.Static("/public", "./public")
-
-	// Returns a local HTML file.
-	app.Get("/hello", func(c *fiber.Ctx) {
-		if err := c.SendFile("./templates/hello.html"); err != nil {
-			c.Next(err)
-		}
+	// Returns plain text.
+	app.Get("/hello", func(c *fiber.Ctx) error {
+		return c.SendString("Hello, Fiber!")
 		// navigate to => http://localhost:3000/hello
 	})
 
-	// Use parameters
-	app.Get("/parameter/:value", func(c *fiber.Ctx) {
-		c.Send("Get request with value: " + c.Params("value"))
+	// Use parameters.
+	app.Get("/parameter/:value", func(c *fiber.Ctx) error {
+		return c.SendString("Get request with value: " + c.Params("value"))
 		// navigate to => http://localhost:3000/parameter/this_is_the_parameter
 	})
 
 	// Use wildcards to design your API.
-	app.Get("/api/*", func(c *fiber.Ctx) {
-		c.Send("API path: " + c.Params("*") + " -> do lookups with these values")
-		// navigate to => http://localhost:3000/api/user/chris
-
+	app.Get("/api/*", func(c *fiber.Ctx) error {
 		// return serialized JSON.
 		if c.Params("*") == "fruits" {
 
 			response := FruitInterface{
 				Page:   1,
-				Fruits: []string{"apple", "peach", "pear"},
+				Fruits: []string{"apple", "peach", "pear", "watermelon"},
 			}
 
-			responseJson, _ := json.Marshal(response)
-
-			c.Send(responseJson)
+			return c.JSON(response)
 
 			// navigate to => http://localhost:3000/api/fruits
 		}
+
+		return c.SendString("API path: " + c.Params("*") + " -> do lookups with these values")
+		// navigate to => http://localhost:3000/api/user/iggy
 	})
 
-	app.Listen(os.Getenv("PORT"))
+	var port = os.Getenv("PORT")
+
+	// Default port.
+	if port == "" {
+		port = ":3000"
+	}
+
+	app.Listen(port)
 }
