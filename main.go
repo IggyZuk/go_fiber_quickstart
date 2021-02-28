@@ -2,6 +2,7 @@ package main
 
 import (
 	"encoding/json"
+	"os"
 
 	"github.com/gofiber/fiber"
 )
@@ -58,5 +59,5 @@ func main() {
 		}
 	})
 
-	app.Listen(3000)
+	app.Listen(os.Getenv("PORT"))
 }
