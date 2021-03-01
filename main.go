@@ -55,12 +55,5 @@ func main() {
 		// navigate to => http://localhost:3000/api/user/iggy
 	})
 
-	var port = os.Getenv("PORT")
-
-	// Default port.
-	if len(port) == 0 {
-		port = ":3000"
-	}
-
-	app.Listen(port)
+	app.Listen(os.Getenv("PORT"))
 }
