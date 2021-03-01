@@ -55,5 +55,14 @@ func main() {
 		// navigate to => http://localhost:3000/api/user/iggy
 	})
 
-	app.Listen(os.Getenv("PORT"))
+	// Get port from env vars.
+	var port = os.Getenv("PORT")
+
+	// Use a default port if none was set in env.
+	if port == "" {
+		port = "3000"
+	}
+
+	// Start server on http://${heroku-url}:${port}
+	app.Listen(":" + port)
 }
