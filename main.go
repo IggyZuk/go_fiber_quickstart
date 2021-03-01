@@ -55,6 +55,11 @@ func main() {
 		// navigate to => http://localhost:3000/api/user/iggy
 	})
 
+	// 404 handler.
+	app.Use(func(c *fiber.Ctx) error {
+		return c.SendStatus(404) // => 404 "Not Found"
+	})
+
 	// Get port from env vars.
 	var port = os.Getenv("PORT")
 
